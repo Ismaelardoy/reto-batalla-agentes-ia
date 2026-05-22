@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚔️ Batalla de Chatbots: Profesor IA vs Alumno IA</title>
+    <!-- Google Fonts: Outfit (main) & Fira Code (code/sources) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Palette */
+            --bg-primary: #0b0f19;
+            --bg-secondary: #131b2e;
+            --bg-tertiary: #1e293b;
+            
+            --accent-indigo: #6366f1;
+            --accent-purple: #8b5cf6;
+            --accent-teal: #14b8a6;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --accent-amber: #f59e0b;
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            
+            --border-color: rgba(255, 255, 255, 0.06);
+            --glass-bg: rgba(19, 27, 46, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --glass-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.7);
+            --backdrop-blur: blur(16px);
+            
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'Fira Code', monospace;
+        }
+
+        /* Basic Reset & Layout */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            font-size: 1.05rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(20, 184, 166, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        /* Container & Header */
+        header {
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(11, 15, 25, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1.25rem 2rem;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-logo {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.4));
+            animation: bounce 3s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .brand-text h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent-indigo));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-muted);
+            box-shadow: 0 0 8px var(--text-muted);
+        }
+
+        .status-dot.online {
+            background-color: var(--accent-teal);
+            box-shadow: 0 0 8px var(--accent-teal);
+        }
+
+        .status-dot.offline {
+            background-color: var(--accent-rose);
+            box-shadow: 0 0 8px var(--accent-rose);
+        }
+
+        /* Main Workspace */
+        main {
+            flex: 1;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1.1fr 1.9fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Left Side: Controls & Stats */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            box-shadow: var(--glass-shadow);
+            backdrop-filter: var(--backdrop-blur);
+            padding: 1.75rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-indigo), transparent);
+            opacity: 0.7;
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.75rem;
+        }
+
+        .panel-title i {
+            color: var(--accent-indigo);
+        }
+
+        /* Textarea and Character Counter */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        textarea {
+            width: 100%;
+            height: 180px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            font-size: 1.05rem;
+            resize: none;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+
+        textarea:focus {
+            border-color: var(--accent-indigo);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .char-counter {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            align-self: flex-end;
+            margin-top: -0.25rem;
+            transition: var(--transition-smooth);
+        }
+
+        .char-counter.valid {
+            color: var(--accent-teal);
+        }
+
+        /* Quick Templates */
+        .templates-wrapper {
+            margin-bottom: 1.5rem;
+        }
+
+        .templates-title {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .templates-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .template-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .template-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--accent-indigo);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .action-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.5);
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        }
+
+        .action-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: var(--text-muted);
+            box-shadow: none;
+        }
+
+        /* Stats Card */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--accent-teal);
+            margin-bottom: 0.25rem;
+            font-family: var(--font-mono);
+        }
+
+        .stat-value.score {
+            color: var(--accent-indigo);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Right Side: Battle Board */
+        .battle-board {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            min-height: 500px;
+        }
+
+        /* Placeholder state */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 4rem 2rem;
+            flex: 1;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            filter: grayscale(0.2);
+            opacity: 0.8;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            max-width: 400px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+
+        /* Loading / Animation State */
+        .battle-loader {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            padding: 4rem 2rem;
+            gap: 2rem;
+        }
+
+        .swords-loader {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+
+        .sword {
+            position: absolute;
+            font-size: 3rem;
+            top: 50%;
+            left: 50%;
+            margin-top: -1.5rem;
+            margin-left: -1.5rem;
+            transition: var(--transition-smooth);
+        }
+
+        .sword-left {
+            animation: slash-left 1.5s ease-in-out infinite;
+        }
+
+        .sword-right {
+            animation: slash-right 1.5s ease-in-out infinite;
+        }
+
+        @keyframes slash-left {
+            0% { transform: translate(-30px, 10px) rotate(-45deg); }
+            50% { transform: translate(10px, -10px) rotate(15deg); }
+            100% { transform: translate(-30px, 10px) rotate(-45deg); }
+        }
+
+        @keyframes slash-right {
+            0% { transform: translate(30px, 10px) rotate(45deg) scaleX(-1); }
+            50% { transform: translate(-10px, -10px) rotate(-15deg) scaleX(-1); }
+            100% { transform: translate(30px, 10px) rotate(45deg) scaleX(-1); }
+        }
+
+        .loader-steps {
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .loader-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 0.85rem 1.25rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            transition: var(--transition-smooth);
+        }
+
+        .loader-step.active {
+            background: rgba(99, 102, 241, 0.06);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: var(--text-primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .loader-step.completed {
+            border-color: rgba(16, 185, 129, 0.3);
+            color: var(--text-muted);
+        }
+
+        .step-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--accent-indigo);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .loader-step.completed .step-spinner {
+            display: none;
+        }
+
+        .step-check {
+            display: none;
+            color: var(--accent-emerald);
+            font-weight: bold;
+        }
+
+        .loader-step.completed .step-check {
+            display: inline;
+        }
+
+        .step-bullet {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-muted);
+        }
+
+        .loader-step.active .step-bullet {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Battle Content Layout */
+        .battle-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Message Cards (Teacher / Student) */
+        .chat-card {
+            display: grid;
+            grid-template-columns: 60px 1fr;
+            gap: 1.25rem;
+            padding: 1.5rem;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .chat-card.teacher {
+            border-left: 4px solid var(--accent-indigo);
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.03) 0%, transparent 100%);
+        }
+
+        .chat-card.student {
+            border-left: 4px solid var(--accent-teal);
+            background: linear-gradient(90deg, rgba(20, 184, 166, 0.03) 0%, transparent 100%);
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: var(--bg-tertiary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-card.teacher .avatar {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .chat-card.student .avatar {
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(16, 185, 129, 0.2));
+            border-color: rgba(20, 184, 166, 0.3);
+        }
+
+        .chat-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .sender-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .chat-card.teacher .sender-name {
+            color: var(--accent-indigo);
+        }
+
+        .chat-card.student .sender-name {
+            color: var(--accent-teal);
+        }
+
+        .role-badge {
+            font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .chat-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            white-space: pre-line;
+        }
+
+        /* Justification Box */
+        .justification-box {
+            margin-top: 1rem;
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            background: rgba(99, 102, 241, 0.04);
+            border-left: 2px solid var(--accent-indigo);
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .box-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent-indigo);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        /* RAG Sources */
+        .sources-box {
+            margin-top: 1rem;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 0.75rem;
+        }
+
+        .sources-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--accent-teal);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .sources-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .source-tag {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            background: rgba(20, 184, 166, 0.08);
+            border: 1px solid rgba(20, 184, 166, 0.2);
+            color: var(--accent-teal);
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+        }
+
+        /* Evaluation Card */
+        .evaluation-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .evaluation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 1.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 1.5rem;
+        }
+
+        .eval-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .eval-title-wrap h4 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        /* Circular Score Representation */
+        .score-circle-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .score-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .score-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 8;
+        }
+
+        .score-fill {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 220;
+            stroke-dashoffset: 220;
+            transition: stroke-dashoffset 1s ease-out;
+        }
+
+        .score-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.35rem;
+            font-weight: 800;
+            font-family: var(--font-mono);
+        }
+
+        /* Accordion style sections for feedback details */
+        .accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .accordion-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+        }
+
+        .accordion-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .accordion-header {
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            font-size: 1.05rem;
+            font-weight: 700;
+            transition: var(--transition-smooth);
+        }
+
+        .accordion-header.feedback { color: var(--accent-indigo); }
+        .accordion-header.strengths { color: var(--accent-emerald); }
+        .accordion-header.weaknesses { color: var(--accent-rose); }
+
+        .accordion-icon {
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-item.open .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0, 1, 0, 1); /* Quick slide transition */
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .accordion-item.open .accordion-content {
+            max-height: 1000px; /* arbitrary high value for flexible content */
+            transition: max-height 0.3s cubic-bezier(1, 0, 1, 0);
+        }
+
+        .accordion-inner-content {
+            padding: 1.25rem;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .accordion-inner-content ul {
+            list-style: none;
+        }
+
+        .accordion-inner-content li {
+            position: relative;
+            padding-left: 1.25rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .accordion-inner-content li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .strengths-list li::before { color: var(--accent-emerald); }
+        .weaknesses-list li::before { color: var(--accent-rose); }
+
+        /* History and Footer Drawer */
+        .history-section {
+            grid-column: 1 / -1;
+            margin-top: 1rem;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .history-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .history-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .history-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--accent-indigo);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .history-topic {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .history-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 0.5rem;
+        }
+
+        .history-badge {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: var(--accent-indigo);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-weight: 700;
+        }
+
+        .history-badge.good {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.2);
+            color: var(--accent-emerald);
+        }
+
+        .history-badge.bad {
+            background: rgba(244, 63, 94, 0.1);
+            border-color: rgba(244, 63, 94, 0.2);
+            color: var(--accent-rose);
+        }
+
+        .clear-btn {
+            background: transparent;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            color: var(--accent-rose);
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .clear-btn:hover {
+            background: rgba(244, 63, 94, 0.1);
+            border-color: var(--accent-rose);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+
+        footer a {
+            color: var(--accent-indigo);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-logo">⚔️</div>
+                <div class="brand-text">
+                    <h1>Batalla de Chatbots</h1>
+                    <p>Simulador Educativo: Profesor IA vs Alumno IA</p>
+                </div>
+            </div>
+            <div class="status-pill">
+                <div id="statusDot" class="status-dot"></div>
+                <span id="statusText">Conectando...</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Left Side: Controls & Analytics -->
+        <div class="sidebar">
+            <div class="glass-panel">
+                <h3 class="panel-title"><span>📝</span> Configurar Batalla</h3>
+                
+                <div class="form-group">
+                    <label for="temario">Temario para la pregunta y evaluación</label>
+                    <textarea id="temario" placeholder="Escribe o pega aquí el temario sobre el cual interactuarán los agentes. Debe tener al menos 50 caracteres para ser un tema válido..."></textarea>
+                    <div id="charCounter" class="char-counter">0 / 50 caracteres</div>
+                </div>
+
+                <div class="templates-wrapper">
+                    <div class="templates-title">💡 Plantillas Rápidas</div>
+                    <div class="templates-grid">
+                        <button class="template-btn" onclick="loadTemplate('langgraph')">LangGraph & Agentes</button>
+                        <button class="template-btn" onclick="loadTemplate('rag')">Sistemas RAG</button>
+                        <button class="template-btn" onclick="loadTemplate('transformers')">Transformers & LLMs</button>
+                        <button class="template-btn" onclick="loadTemplate('fastapi')">FastAPI & Pydantic</button>
+                    </div>
+                </div>
+
+                <button id="startBtn" class="action-btn" disabled>
+                    <span>⚔️</span> Iniciar Simulación
+                </button>
+            </div>
+
+            <!-- Stats dashboard -->
+            <div class="glass-panel">
+                <h3 class="panel-title"><span>📊</span> Estadísticas Locales</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div id="statTotal" class="stat-value">0</div>
+                        <div class="stat-label">Batallas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div id="statScore" class="stat-value score">-</div>
+                        <div class="stat-label">Nota Media</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Battle Board -->
+        <div class="glass-panel" style="display: flex; flex-direction: column;">
+            <h3 class="panel-title"><span>🛡️</span> Campo de Batalla</h3>
+            
+            <div id="battleBoard" class="battle-board">
+                <!-- Initial empty state -->
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-icon">🤖⚔️🧑‍🎓</div>
+                    <h3>El campo está listo</h3>
+                    <p>Introduce un temario a la izquierda o selecciona una plantilla para iniciar el debate entre los agentes de Inteligencia Artificial.</p>
+                </div>
+
+                <!-- Loading State (will be hidden by default) -->
+                <div id="loadingState" class="battle-loader" style="display: none;">
+                    <div class="swords-loader">
+                        <div class="sword sword-left">⚔️</div>
+                        <div class="sword sword-right">⚔️</div>
+                    </div>
+                    <div class="loader-steps">
+                        <div id="stepProfesor" class="loader-step">
+                            <div class="step-spinner"></div>
+                            <span class="step-check">✓</span>
+                            <div class="step-bullet"></div>
+                            <span>Profesor formulando pregunta a partir del temario...</span>
+                        </div>
+                        <div id="stepAlumno" class="loader-step">
+                            <div class="step-spinner"></div>
+                            <span class="step-check">✓</span>
+                            <div class="step-bullet"></div>
+                            <span>Alumno buscando información en RAG y redactando respuesta...</span>
+                        </div>
+                        <div id="stepEvaluacion" class="loader-step">
+                            <div class="step-spinner"></div>
+                            <span class="step-check">✓</span>
+                            <div class="step-bullet"></div>
+                            <span>Profesor analizando el nivel y elaborando la nota...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Battle Result content (will be populated dynamically) -->
+                <div id="battleContent" class="battle-layout" style="display: none;">
+                    
+                    <!-- Fase 1: Profesor Pregunta -->
+                    <div class="chat-card teacher">
+                        <div class="avatar">👨‍🏫</div>
+                        <div>
+                            <div class="chat-meta">
+                                <span class="sender-name">Profesor IA</span>
+                                <span class="role-badge">Evaluador</span>
+                            </div>
+                            <div id="resultPregunta" class="chat-text"></div>
+                            <div class="justification-box">
+                                <div class="box-title">🎯 Justificación Pedagógica</div>
+                                <div id="resultJustificacion"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fase 2: Alumno Responde -->
+                    <div class="chat-card student">
+                        <div class="avatar">🧑‍🎓</div>
+                        <div>
+                            <div class="chat-meta">
+                                <span class="sender-name">Alumno IA (RAG)</span>
+                                <span class="role-badge">Estudiante</span>
+                            </div>
+                            <div id="resultRespuesta" class="chat-text"></div>
+                            <div class="sources-box">
+                                <div class="sources-title">📚 Documentos RAG Consultados</div>
+                                <div id="resultSources" class="sources-list"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fase 3: Evaluación -->
+                    <div class="evaluation-card">
+                        <div class="evaluation-header">
+                            <div class="eval-title-wrap">
+                                <span style="font-size: 2rem;">🏆</span>
+                                <div>
+                                    <h4>Calificación Académica</h4>
+                                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Generado por el Profesor IA</p>
+                                </div>
+                            </div>
+                            
+                            <div class="score-circle-container">
+                                <svg class="score-svg" viewBox="0 0 80 80">
+                                    <circle class="score-bg" cx="40" cy="40" r="35"></circle>
+                                    <circle id="scoreFill" class="score-fill" cx="40" cy="40" r="35"></circle>
+                                </svg>
+                                <div id="scoreText" class="score-text">0.0</div>
+                            </div>
+                        </div>
+
+                        <!-- Accordion sections -->
+                        <div class="accordion">
+                            <div class="accordion-item open" id="feedbackItem">
+                                <div class="accordion-header feedback" onclick="toggleAccordion('feedbackItem')">
+                                    <span>💡 Feedback del Profesor</span>
+                                    <span class="accordion-icon">▼</span>
+                                </div>
+                                <div class="accordion-content">
+                                    <div id="resultFeedback" class="accordion-inner-content"></div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item" id="strengthsItem">
+                                <div class="accordion-header strengths" onclick="toggleAccordion('strengthsItem')">
+                                    <span>📈 Puntos Fuertes</span>
+                                    <span class="accordion-icon">▼</span>
+                                </div>
+                                <div class="accordion-content">
+                                    <div class="accordion-inner-content">
+                                        <ul id="resultStrengths" class="strengths-list"></ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item" id="weaknessesItem">
+                                <div class="accordion-header weaknesses" onclick="toggleAccordion('weaknessesItem')">
+                                    <span>📉 Puntos Débiles / A mejorar</span>
+                                    <span class="accordion-icon">▼</span>
+                                </div>
+                                <div class="accordion-content">
+                                    <div class="accordion-inner-content">
+                                        <ul id="resultWeaknesses" class="weaknesses-list"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- History Section (Wide drawer style at bottom) -->
+        <div class="history-section glass-panel">
+            <div class="history-header">
+                <h3 class="panel-title" style="border: none; padding: 0; margin: 0;"><span>📜</span> Historial de Batallas</h3>
+                <button class="clear-btn" onclick="clearHistory()">Borrar Historial</button>
+            </div>
+            <div id="historyList" class="history-list">
+                <!-- Will be populated dynamically -->
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>Batalla de Chatbots | Creado para el Reto de Agentes de IA | 2026</p>
+    </footer>
+
+    <script>
+        // API Base URL
+        const API_URL = ""; // Relative path matches the same origin
+        
+        // DOM Elements
+        const statusDot = document.getElementById("statusDot");
+        const statusText = document.getElementById("statusText");
+        const temarioInput = document.getElementById("temario");
+        const charCounter = document.getElementById("charCounter");
+        const startBtn = document.getElementById("startBtn");
+        
+        const emptyState = document.getElementById("emptyState");
+        const loadingState = document.getElementById("loadingState");
+        const battleContent = document.getElementById("battleContent");
+        
+        const stepProfesor = document.getElementById("stepProfesor");
+        const stepAlumno = document.getElementById("stepAlumno");
+        const stepEvaluacion = document.getElementById("stepEvaluacion");
+        
+        const resultPregunta = document.getElementById("resultPregunta");
+        const resultJustificacion = document.getElementById("resultJustificacion");
+        const resultRespuesta = document.getElementById("resultRespuesta");
+        const resultSources = document.getElementById("resultSources");
+        const resultFeedback = document.getElementById("resultFeedback");
+        const resultStrengths = document.getElementById("resultStrengths");
+        const resultWeaknesses = document.getElementById("resultWeaknesses");
+        
+        const scoreFill = document.getElementById("scoreFill");
+        const scoreText = document.getElementById("scoreText");
+        
+        const historyList = document.getElementById("historyList");
+        const statTotal = document.getElementById("statTotal");
+        const statScore = document.getElementById("statScore");
+
+        // Templates Dictionary
+        const TEMPLATES = {
+            langgraph: `Inteligencia Artificial y Sistemas Multi-Agente con LangGraph:
+1. Orquestación con LangGraph: StateGraph, flujos cíclicos y condicionales.
+2. Agentes autónomos dirigidos por grafos de estado.
+3. Compartición de estado, transiciones entre nodos y ejecución paralela de tareas estructuradas.`,
+            
+            rag: `Sistemas RAG (Retrieval-Augmented Generation):
+1. Ingesta de datos, embeddings vectoriales y almacenamiento en bases de datos vectoriales como FAISS o Pinecone.
+2. Recuperación semántica de contexto relevante a partir de queries en lenguaje natural.
+3. Generación mejorada reduciendo alucinaciones utilizando el contexto recuperado en el prompt de LLM.`,
+            
+            transformers: `Modelos de Lenguaje Grande (LLMs) y Transformers:
+1. Arquitectura Transformer original basada en mecanismos de atención y auto-atención.
+2. Procesos de entrenamiento: pre-entrenamiento auto-supervisado y fine-tuning.
+3. Alineación pedagógica mediante RLHF (Reinforcement Learning from Human Feedback) y DPO.`,
+            
+            fastapi: `APIs Modernas con FastAPI y Pydantic en Python:
+1. Creación de endpoints RESTful eficientes basados en ASGI y programación asíncrona.
+2. Validación robusta de datos en tiempo de ejecución con Pydantic v2.
+3. Generación automática de especificaciones OpenAPI y documentación Swagger interactiva.`
+        };
+
+        // Initialize App
+        window.addEventListener("DOMContentLoaded", () => {
+            checkAPIHealth();
+            updateCharCount();
+            loadHistory();
+            
+            // Events
+            temarioInput.addEventListener("input", updateCharCount);
+            startBtn.addEventListener("click", startBattle);
+        });
+
+        // Check Health API
+        async function checkAPIHealth() {
+            try {
+                const res = await fetch(`${API_URL}/health`);
+                if (res.ok) {
+                    statusDot.className = "status-dot online";
+                    statusText.textContent = "API Conectada";
+                } else {
+                    throw new Error();
+                }
+            } catch (err) {
+                statusDot.className = "status-dot offline";
+                statusText.textContent = "API Desconectada";
+            }
+        }
+
+        // Update Char Counter and enable/disable button
+        function updateCharCount() {
+            const length = temarioInput.value.trim().length;
+            charCounter.textContent = `${length} / 50 caracteres`;
+            
+            if (length >= 50) {
+                charCounter.className = "char-counter valid";
+                startBtn.disabled = false;
+            } else {
+                charCounter.className = "char-counter";
+                startBtn.disabled = true;
+            }
+        }
+
+        // Load Quick Template
+        function loadTemplate(key) {
+            if (TEMPLATES[key]) {
+                temarioInput.value = TEMPLATES[key];
+                updateCharCount();
+                // Scroll focus
+                temarioInput.focus();
+            }
+        }
+
+        // Accordion functionality
+        function toggleAccordion(itemId) {
+            const item = document.getElementById(itemId);
+            item.classList.toggle("open");
+        }
+
+        // Start Battle endpoint request
+        async function startBattle() {
+            const temarioText = temarioInput.value.trim();
+            if (temarioText.length < 50) return;
+
+            // UI adjustments
+            startBtn.disabled = true;
+            emptyState.style.display = "none";
+            battleContent.style.display = "none";
+            loadingState.style.display = "flex";
+            
+            // Reset loader steps
+            resetLoader();
+            
+            // Simulate progression logs
+            setStepActive(stepProfesor);
+            
+            try {
+                // We send the request
+                const response = await fetch(`${API_URL}/start_battle`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ temario: temarioText })
+                });
+
+                if (!response.ok) {
+                    let errMsg = "La API retornó un error de procesamiento de batalla.";
+                    try {
+                        const errData = await response.json();
+                        if (errData && errData.detail) {
+                            errMsg = errData.detail;
+                        }
+                    } catch (e) {}
+                    throw new Error(errMsg);
+                }
+
+                const data = await response.json();
+                
+                // Animate steps transitions
+                setStepCompleted(stepProfesor);
+                setStepActive(stepAlumno);
+                
+                await delay(1200);
+                setStepCompleted(stepAlumno);
+                setStepActive(stepEvaluacion);
+                
+                await delay(1000);
+                setStepCompleted(stepEvaluacion);
+                await delay(500);
+
+                // Show Results
+                displayBattleResults(data);
+                
+                // Save to history
+                saveToLocalStorage(temarioText, data);
+                
+            } catch (error) {
+                alert(`Error al procesar la batalla: ${error.message}. Verifica que tengas las credenciales de los LLMs configuradas en el archivo .env`);
+                resetUIToEmpty();
+            } finally {
+                startBtn.disabled = false;
+                updateCharCount();
+            }
+        }
+
+        // UI Helpers
+        const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+        
+        function resetLoader() {
+            [stepProfesor, stepAlumno, stepEvaluacion].forEach(step => {
+                step.className = "loader-step";
+            });
+        }
+
+        function setStepActive(stepElement) {
+            stepElement.className = "loader-step active";
+        }
+
+        function setStepCompleted(stepElement) {
+            stepElement.className = "loader-step completed";
+        }
+
+        function resetUIToEmpty() {
+            loadingState.style.display = "none";
+            battleContent.style.display = "none";
+            emptyState.style.display = "flex";
+        }
+
+        // Render response data
+        function displayBattleResults(data) {
+            loadingState.style.display = "none";
+            battleContent.style.display = "flex";
+            
+            // 1. Profesor Question
+            resultPregunta.textContent = data.pregunta.pregunta;
+            resultJustificacion.textContent = data.pregunta.justificacion;
+            
+            // 2. Student Answer
+            resultRespuesta.textContent = data.respuesta.respuesta;
+            
+            // Sources tags
+            resultSources.innerHTML = "";
+            if (data.respuesta.fuentes_usadas && data.respuesta.fuentes_usadas.length > 0) {
+                data.respuesta.fuentes_usadas.forEach(source => {
+                    const tag = document.createElement("span");
+                    tag.className = "source-tag";
+                    tag.textContent = source;
+                    resultSources.appendChild(tag);
+                });
+            } else {
+                const tag = document.createElement("span");
+                tag.className = "source-tag";
+                tag.style.borderColor = "var(--border-color)";
+                tag.style.background = "rgba(255,255,255,0.03)";
+                tag.style.color = "var(--text-muted)";
+                tag.textContent = "Ninguna fuente explícita recuperada";
+                resultSources.appendChild(tag);
+            }
+            
+            // 3. Evaluation details
+            resultFeedback.textContent = data.evaluacion.feedback;
+            
+            // Strengths list
+            resultStrengths.innerHTML = "";
+            if (data.evaluacion.puntos_fuertes && data.evaluacion.puntos_fuertes.length > 0) {
+                data.evaluacion.puntos_fuertes.forEach(pt => {
+                    const li = document.createElement("li");
+                    li.textContent = pt;
+                    resultStrengths.appendChild(li);
+                });
+            }
+            
+            // Weaknesses list
+            resultWeaknesses.innerHTML = "";
+            if (data.evaluacion.puntos_debiles && data.evaluacion.puntos_debiles.length > 0) {
+                data.evaluacion.puntos_debiles.forEach(pt => {
+                    const li = document.createElement("li");
+                    li.textContent = pt;
+                    resultWeaknesses.appendChild(li);
+                });
+            } else {
+                const li = document.createElement("li");
+                li.style.color = "var(--accent-emerald)";
+                li.textContent = "No se detectaron puntos débiles críticos. ¡Excelente desempeño!";
+                resultWeaknesses.appendChild(li);
+            }
+            
+            // Circular Score animation
+            const score = parseFloat(data.evaluacion.nota);
+            scoreText.textContent = score.toFixed(1);
+            
+            // Circle dash offset calculation: r=35, circumference = 2 * PI * 35 = ~219.9.
+            // 0/10 -> offset = 220, 10/10 -> offset = 0
+            const percentage = score / 10;
+            const strokeDashOffset = 220 - (220 * percentage);
+            
+            // Set Color based on score
+            let color = "var(--accent-rose)";
+            if (score >= 9) color = "var(--accent-emerald)";
+            else if (score >= 7) color = "var(--accent-teal)";
+            else if (score >= 5) color = "var(--accent-amber)";
+            
+            scoreFill.style.stroke = color;
+            scoreText.style.color = color;
+            
+            // Trigger circular drawing
+            setTimeout(() => {
+                scoreFill.style.strokeDashoffset = strokeDashOffset;
+            }, 100);
+        }
+
+        // Local Storage History Management
+        function saveToLocalStorage(temario, battleData) {
+            let history = JSON.parse(localStorage.getItem("battle_history")) || [];
+            
+            // Insert at the beginning
+            const record = {
+                id: Date.now(),
+                timestamp: new Date().toLocaleString(),
+                title: temario.substring(0, 60) + (temario.length > 60 ? "..." : ""),
+                temario: temario,
+                data: battleData
+            };
+            
+            history.unshift(record);
+            
+            // Cap at 10 items to save space
+            if (history.length > 10) {
+                history.pop();
+            }
+            
+            localStorage.setItem("battle_history", JSON.stringify(history));
+            loadHistory();
+        }
+
+        function loadHistory() {
+            let history = JSON.parse(localStorage.getItem("battle_history")) || [];
+            historyList.innerHTML = "";
+            
+            if (history.length === 0) {
+                historyList.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 1.5rem 0;">
+                        No hay batallas en el historial local todavía.
+                    </div>
+                `;
+                statTotal.textContent = "0";
+                statScore.textContent = "-";
+                return;
+            }
+            
+            let totalScore = 0;
+            
+            history.forEach(record => {
+                const score = parseFloat(record.data.evaluacion.nota);
+                totalScore += score;
+                
+                let scoreClass = "bad";
+                if (score >= 8.5) scoreClass = "good";
+                else if (score >= 5.0) scoreClass = ""; // neutral
+                
+                const card = document.createElement("div");
+                card.className = "history-card";
+                card.onclick = () => loadHistoryRecord(record);
+                
+                card.innerHTML = `
+                    <div class="history-topic">${escapeHtml(record.title)}</div>
+                    <div class="history-footer">
+                        <span>${record.timestamp.split(',')[0]}</span>
+                        <span class="history-badge ${scoreClass}">Nota: ${score.toFixed(1)}</span>
+                    </div>
+                `;
+                historyList.appendChild(card);
+            });
+            
+            // Update stats
+            statTotal.textContent = history.length;
+            const avgScore = totalScore / history.length;
+            statScore.textContent = avgScore.toFixed(1);
+        }
+
+        function loadHistoryRecord(record) {
+            temarioInput.value = record.temario;
+            updateCharCount();
+            displayBattleResults(record.data);
+            
+            // Scroll result panel into view on mobile
+            document.getElementById("battleBoard").scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function clearHistory() {
+            if (confirm("¿Estás seguro de que quieres borrar el historial local?")) {
+                localStorage.removeItem("battle_history");
+                loadHistory();
+            }
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
